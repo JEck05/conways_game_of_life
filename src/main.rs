@@ -1,4 +1,4 @@
-use conways_game_of_life::game::{self, Board};
+use conways_game_of_life::game::{self,Board};
 
 
 fn main() {
@@ -25,7 +25,8 @@ fn main() {
 
     let board = Board::from(50, 50, gosper_glider);
 
-    game::start_game(board,1000);
+
+    game::start_game(board, 1000);
 }
 
 
