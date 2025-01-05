@@ -1,13 +1,14 @@
+
 pub struct Board {
-    pub(crate) board: Vec<Vec<Cell>>,
+    board: Vec<Vec<Cell>>,
     width: usize,
     height: usize,
     current_generation: usize,
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct Cell {
-    pub(crate) alive: bool,
+pub struct Cell {
+    alive: bool,
     next_alive_state: bool,
     last_checked: usize,
 }
@@ -26,10 +27,12 @@ impl Board {
         let mut board_vec = vec![vec![Cell { alive: false, next_alive_state: false, last_checked: 0 }; width]; height];
 
         for (x, y) in coord_list {
-            if x != width && y != height {
+            if !(x >= width) && !(y >= height) {
                 board_vec[x][y].alive = true;
 
                 board_vec[x][y].next_alive_state = true;
+            }else{
+                panic!("Invalid Coordinates of: X = {x} Y = nn   {y}");
             }
         }
 
@@ -50,6 +53,17 @@ impl Board {
             }
         }
         self.current_generation += 1;
+    }
+    pub fn to_displayable_board(&self) -> Vec<Vec<bool>>{
+        self.board
+            .iter()
+            .map(
+                |row|
+                    row
+                        .into_iter()
+                        .map(|cell| cell.alive )
+                        .collect())
+            .collect()
     }
     fn get_neighbours_alive(&mut self, (x, y): (usize, usize)) -> usize {
         let mut neighbours = 0;
@@ -76,4 +90,5 @@ impl Board {
         // println!("break");
         neighbours
     }
+
 }

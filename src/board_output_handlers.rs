@@ -1,7 +1,7 @@
-use crate::game::{Cell};
 use std::{process::Command};
+
 pub trait BoardOutputHandlers {
-    fn display(&self, board: &Vec<Vec<Cell>>);
+    fn display(&self, board: &Vec<Vec<bool>>);
 }
 pub struct ConsoleOutputHandler;
 impl ConsoleOutputHandler {
@@ -10,12 +10,12 @@ impl ConsoleOutputHandler {
     }
 }
 impl BoardOutputHandlers for ConsoleOutputHandler {
-    fn display(&self, board: &Vec<Vec<Cell>>) {
+    fn display(&self, board: &Vec<Vec<bool>>) {
         Command::new("cmd").args(["/C", "cls"]).status().unwrap();
         println!();
         for rows in board {
             for cells in rows {
-                if cells.alive {
+                if cells == &true {
                     print!(" X ");
                 } else {
                     print!(" _ ");
@@ -25,6 +25,3 @@ impl BoardOutputHandlers for ConsoleOutputHandler {
         }
     }
 }
-
-
-

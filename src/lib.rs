@@ -1,3 +1,5 @@
 pub mod game;
-pub use game::*;
-pub use game::board_output_handlers;
+pub mod board_output_handlers;
+
+pub use game::Board;
+
