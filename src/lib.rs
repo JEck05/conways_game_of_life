@@ -1,5 +1,6 @@
-pub mod game;
+mod game;
 pub mod board_output_handlers;
 
-pub use game::Board;
+pub use game::Game;
+
 
