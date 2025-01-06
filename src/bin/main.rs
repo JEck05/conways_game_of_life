@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use conways_game_of_life::{self, Game};
-use conways_game_of_life::board_output_handlers::text_output_handler::*;
+use conways_game_of_life::board_output_handlers::{BoardOutputHandlers, text_output_handler::*};
 fn main() {
     let _vec = vec![(4,4), (4, 5), (4, 6)];
     //    X
@@ -25,7 +25,12 @@ fn main() {
     (7+12, 20+8), (7+13, 20+8)];
 
     let mut game = Game::new();
-    game.add_output_handlers(Rc::new(TextOutputHandler::new(String::from("hello"))));
+    let text_output_handler: Rc<dyn BoardOutputHandlers> = Rc::new(TextOutputHandler::new(String::from("Hello")));
+
+    game.remove_default_output_handler();
+
+    game.set_default_handler(text_output_handler);
+
     game.initialize_board(10, 10, vec1).start_game(10);
 
 }
