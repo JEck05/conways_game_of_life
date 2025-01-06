@@ -1,11 +1,3 @@
-
-pub struct Board {
-    board: Vec<Vec<Cell>>,
-    width: usize,
-    height: usize,
-    current_generation: usize,
-}
-
 #[derive(Clone, Debug)]
 pub struct Cell {
     alive: bool,
@@ -22,6 +14,13 @@ impl Cell {
         self.alive
     }
 }
+pub struct Board {
+    board: Vec<Vec<Cell>>,
+    width: usize,
+    height: usize,
+    current_generation: usize,
+}
+
 impl Board {
     pub fn from(width: usize, height: usize, coord_list: Vec<(usize, usize)>) -> Self {
         let mut board_vec = vec![vec![Cell { alive: false, next_alive_state: false, last_checked: 0 }; width]; height];
