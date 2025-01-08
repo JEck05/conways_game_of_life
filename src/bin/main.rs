@@ -24,9 +24,11 @@ fn main() {
     (7+11, 20+7), (7+15, 20+7),
     (7+12, 20+8), (7+13, 20+8)];
 
-    let mut game = Game::new();
-    game.add_output_handlers(Rc::new(TextOutputHandler::new(String::from("hello"))));
-    game.initialize_board(10, 10, vec1).start_game(10);
+    let _ = Game::new()
+
+        .add_output_handlers(Rc::new(TextOutputHandler::new(String::from("Hello"))))
+        .initialize_board(10, 10, vec1)
+        .start_game(10);
 
 }
 

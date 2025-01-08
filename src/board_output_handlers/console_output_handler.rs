@@ -16,7 +16,7 @@ impl BoardOutputHandlers for ConsoleOutputHandler {
             for cells in rows {
                 if cells == &true {
                     print!(" X ");
-                } else {
+                }else {
                     print!(" _ ");
                 }
             }
