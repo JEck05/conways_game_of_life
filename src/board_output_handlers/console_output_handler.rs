@@ -8,6 +8,7 @@ impl ConsoleOutputHandler {
         ConsoleOutputHandler
     }
 }
+
 impl BoardOutputHandlers for ConsoleOutputHandler {
     fn display(&self, board: &Vec<Vec<bool>>) {
         Command::new("cmd").args(["/C", "cls"]).status().unwrap();

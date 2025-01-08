@@ -5,17 +5,17 @@ use crate::board_output_handlers::{BoardOutputHandlers, console_output_handler::
 use board::Board;
 use std::{thread, time, rc::Rc};
 use std::cell::{RefCell};
+use std::rc::Weak;
 
 pub struct Game{
-    output_observers: RefCell<Vec<Rc<dyn BoardOutputHandlers>>>,
+    output_observers: RefCell<Vec<Weak<dyn BoardOutputHandlers>>>,
     board: RefCell<Option<Board>>,
-    default_handler: RefCell<Rc<dyn BoardOutputHandlers>>,
+    default_handler: Rc<dyn BoardOutputHandlers>,
 }
 impl Game {
     pub fn new() -> Self {
-        let default_handler: RefCell<Rc<dyn BoardOutputHandlers>> = RefCell::new(Rc::new(ConsoleOutputHandler::new()));
-
-        Game { output_observers: RefCell::new(vec![]), board: RefCell::new(None), default_handler }
+        let default_handler: Rc<dyn BoardOutputHandlers> = Rc::new(ConsoleOutputHandler::new());
+        Game { output_observers: RefCell::new(vec![Rc::downgrade(&default_handler)]), board: RefCell::new(None), default_handler}
     }
     pub fn initialize_board(&self, width: usize, height: usize, initial_coords: Vec<(usize, usize)>) -> &Self {
         self.board.replace(Some(Board::from(width, height, initial_coords)));
@@ -35,24 +35,36 @@ impl Game {
             thread::sleep(time::Duration::from_millis(500));
         }
     }
-    pub fn set_default_handler(&self, output_observer: Rc<dyn BoardOutputHandlers>) {
-        self.output_observers.borrow_mut().push(Rc::clone(&output_observer));
+    pub fn set_default_handler(&mut self, output_observer: Rc<dyn BoardOutputHandlers>) -> &mut Self{
+        self.output_observers.borrow_mut().push(Rc::downgrade(&output_observer));
         self.remove_default_output_handler();
-        self.default_handler.replace( output_observer);
+        self.default_handler = output_observer;
+        self
     }
-    pub fn remove_default_output_handler(&self) {
-        self.remove_output_handlers(&Rc::clone(&self.default_handler.borrow()))
+    pub fn remove_default_output_handler(&mut self) -> &Self{
+        self.remove_output_handlers(&Rc::clone(&self.default_handler))
     }
-    pub fn add_output_handlers(&self, observer: Rc<dyn BoardOutputHandlers>) {
-        self.output_observers.borrow_mut().push(observer);
+    pub fn add_output_handlers(&self, observer: Rc<dyn BoardOutputHandlers>) -> &Self {
+        self.output_observers.borrow_mut().push(Rc::downgrade(&observer));
+        self
     }
-    pub fn remove_output_handlers(&self, observer: &Rc<dyn BoardOutputHandlers>) {
+    pub fn remove_output_handlers(&self, observer: &Rc<dyn BoardOutputHandlers>) -> &Self{
         self.output_observers.borrow_mut().retain(|observers| {
-            !Rc::ptr_eq(observers, &observer)
+            !Weak::ptr_eq(observers, &Rc::downgrade(&observer))
         });
+        self
     }
-    fn notify_observers(output_observers: &Vec<Rc<dyn BoardOutputHandlers>>, board: Vec<Vec<bool>>) {
-        output_observers.iter().for_each(|observer| { observer.display(&board)})
+    fn notify_observers(output_observers: &Vec<Weak<dyn BoardOutputHandlers>>, board: Vec<Vec<bool>>) {
+        output_observers
+            .iter()
+            .for_each(
+                |observer| {
+                    match observer.upgrade() {
+                        Some(value) =>  value.display(&board),
+                        None=> (),
+                    }
+                }
+            )
     }
 
 }
